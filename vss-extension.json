@@ -1,9 +1,9 @@
 {
   "manifestVersion": 1,
-  "version": "1.0.0",
-  "name": "Hot Reload and Debug",
+  "version": "1.0.9",
+  "name": "Azure DevOps Extension Demo",
   "description": "Use hot reload and debug directly in VS Code",
-  "publisher": "microsoft",
+  "publisher": "aviatore84",
   "demands": ["api-version/3.0"],
   "categories": ["Azure Repos"],
   "targets": [
@@ -31,24 +31,34 @@
   ],
   "contributions": [
     {
-      "id": "hello-world-hub-group",
-      "type": "ms.vss-web.hub-group",
-      "description": "Sample hub group",
-      "targets": ["ms.vss-web.project-hub-groups-collection"],
+      "id": "work-item-form-extension",
+      "type": "ms.vss-work-web.work-item-form-control",
+      "description": "Sample work item extension",
+      "targets": ["ms.vss-work-web.work-item-form"],
       "properties": {
-        "name": "Hello World!",
-        "icon": {
-          "dark": "img/world.png",
-          "light": "img/world.png"
-        }
-      }
-    },
-    {
-      "id": "default-hub",
-      "type": "ms.vss-web.hub",
-      "targets": [".hello-world-hub-group"],
-      "properties": {
-        "uri": "dist/hub/hub.html"
+        "name": "My custom form control",
+        "uri": "dist/hub/hub.html",
+        "height": 150,
+        "inputs": [
+          {
+            "id": "FieldName",
+            "name": "Field Name For Word Counting",
+            "description": "Longer description ...",
+            "validation": {
+              "dataType": "String",
+              "isRequired": true
+            }
+          },
+          {
+            "id": "MaxWordCount",
+            "name": "Max Description Word Count",
+            "description": "Longer description ...",
+            "validation": {
+              "dataType": "Number",
+              "isRequired": true
+            }
+          }
+        ]
       }
     }
   ]

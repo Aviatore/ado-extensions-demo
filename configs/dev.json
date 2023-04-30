@@ -1,5 +1,6 @@
 {
-  "id": "hot-reload-and-debug-dev",
+  "id": "azure-devops-extension-demo-dev",
+  "name": "Azure DevOps Extension Demo - Dev",
   "public": false,
   "baseUri": "https://localhost:3000"
 }

@@ -12,29 +12,29 @@
     "compile": "npm run clean && webpack --mode production",
     "compile:dev": "npm run clean && webpack --mode development",
     "package": "npm run compile && tfx extension create --manifest-globs vss-extension.json --overrides-file configs/release.json --output-path out",
-    "package:dev": "npm run compile:dev && tfx extension create --manifest-globs vss-extension.json --overrides-file configs/dev.json --output-path out",
+    "package:dev": "npm run compile:dev && tfx extension create --manifest-globs vss-extension.json --overrides-file configs/dev.json --output-path out --rev-version",
     "publish": "npm run compile && tfx extension publish --manifest-globs vss-extension.json --overrides-file configs/release.json --output-path out",
-    "publish:dev": "npm run compile:dev && tfx extension publish --manifest-globs vss-extension.json --overrides-file configs/dev.json --output-path out",
+    "publish:dev": "npm run compile:dev && tfx extension publish --manifest-globs vss-extension.json --overrides-file configs/dev.json --output-path out --rev-version",
     "start:dev": "webpack-dev-server --mode development"
   },
   "dependencies": {
     "azure-devops-extension-api": "^1.158.0",
     "azure-devops-extension-sdk": "^2.0.11",
     "azure-devops-ui": "^2.167.60",
-    "react-dom": "^16.14.0",
-    "react": "^16.14.0"
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
   },
   "devDependencies": {
-    "@types/react-dom": "^16.9.17",
     "@types/react": "^16.14.34",
+    "@types/react-dom": "^16.9.17",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "@webpack-cli/generators": "^3.0.1",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
+    "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint": "^8.35.0",
     "node-sass": "^8.0.0",
     "prettier": "^2.8.7",
     "rimraf": "^4.1.2",
@@ -43,8 +43,8 @@
     "tfx-cli": "^0.14.0",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",
+    "webpack": "^5.76.0",
     "webpack-cli": "^5.0.0",
-    "webpack-dev-server": "^4.11.1",
-    "webpack": "^5.76.0"
+    "webpack-dev-server": "^4.11.1"
   }
 }

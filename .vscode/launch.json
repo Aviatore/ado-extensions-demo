@@ -11,6 +11,10 @@
         {
           "url": "webpack://hot-reload-and-debug/src",
           "path": "${workspaceFolder}/src"
+        },
+        {
+          "url": "webpack:///",
+          "path": "${workspaceFolder}/"
         }
       ]
     },
