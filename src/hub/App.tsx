@@ -76,6 +76,8 @@ const App = () => {
 
         let document: IData;
 
+        const witId = workItemId.current;
+
         try
         {
             document = await dataManager.getDocument("myExt", workItemId.current.toString());
@@ -95,8 +97,12 @@ const App = () => {
         setStorageInputValue(newData);
     }
 
-    const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-        saveData(e.target.value);
+    const onChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setStorageInputValue(e.target.value)
+    }
+    
+    const onSave = (e: React.MouseEvent<HTMLInputElement>) => {
+        saveData(storageInputValue);
     }
 
     const loadData = async () => {
@@ -116,8 +122,6 @@ const App = () => {
         SDK.register(SDK.getContributionId(), () => {
             return {
                 onLoaded: async() => {                    
-                    const user = SDK.getUser();
-
                     maxWordCount.current = SDK.getConfiguration().witInputs["MaxWordCount"];                    
 
                     fieldName.current = SDK.getConfiguration().witInputs["FieldName"];
@@ -153,8 +157,9 @@ const App = () => {
                 <span>Current word count: {wordStat.wordCount}</span>
             </div>
             <div>
-                <label htmlFor='storage'>My Storage</label>
-                <input type='text' id='storage' onChange={onChangeHandler} value={storageInputValue} />
+                <label htmlFor='storage'>My Notes:</label><br />
+                <textarea id='storage' onChange={onChangeHandler} value={storageInputValue} /><br />
+                <input type='button' onClick={onSave} value='Save' />
             </div>
         </>
     );
