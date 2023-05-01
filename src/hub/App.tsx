@@ -4,6 +4,12 @@ import * as SDK from 'azure-devops-extension-sdk';
 import { IWorkItemFormService, WorkItemTrackingServiceIds } from 'azure-devops-extension-api/WorkItemTracking';
 import { IExtensionDataService, IExtensionDataManager, CommonServiceIds } from 'azure-devops-extension-api';
 
+import { ObservableValue, IReadonlyObservableValue } from "azure-devops-ui/Core/Observable";
+import { Observer } from "azure-devops-ui/Observer";
+import { Tab, TabBar, TabSize } from "azure-devops-ui/Tabs";
+import { TextField, TextFieldWidth } from "azure-devops-ui/TextField";
+import { Button } from "azure-devops-ui/Button";
+
 interface IWordStats {
     maxWordCount: number,
     wordCount: number
@@ -25,6 +31,7 @@ const App = () => {
     const wordCount = React.useRef(0);
     const workItemId = React.useRef(0);
     const [storageInputValue, setStorageInputValue] = React.useState("");
+    const selectedTabId = React.useRef(new ObservableValue("tab1"));
 
     console.log("render");
 
@@ -76,8 +83,6 @@ const App = () => {
 
         let document: IData;
 
-        const witId = workItemId.current;
-
         try
         {
             document = await dataManager.getDocument("myExt", workItemId.current.toString());
@@ -97,11 +102,11 @@ const App = () => {
         setStorageInputValue(newData);
     }
 
-    const onChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, value: string) => {
         setStorageInputValue(e.target.value)
     }
     
-    const onSave = (e: React.MouseEvent<HTMLInputElement>) => {
+    const onSave = () => {
         saveData(storageInputValue);
     }
 
@@ -116,6 +121,10 @@ const App = () => {
         } catch {
             console.log(`Cannot get a document. Collection 'myExt', Work Item ID: '${workItemId.current}'`);
         }
+    }
+
+    const onSelectedTabChanged = (newTabId: string) => {
+        selectedTabId.current.value = newTabId;
     }
     
     const registerEvents = () => {
@@ -145,22 +154,59 @@ const App = () => {
             registerEvents();
         });
     }, []);
+
+    const wordCountElement: () => JSX.Element = () => {
+        return (
+            <>
+                <div>
+                    <span>Max word count: {wordStat.maxWordCount}</span>
+                    
+                </div>
+                <div>
+                    <span>Current word count: {wordStat.wordCount}</span>
+                </div>
+            </>
+        )
+    }
+
+    const notesElement: () => JSX.Element = () => {
+        return (
+            <div>
+                <TextField 
+                    ariaLabel='Aria label'
+                    onChange={onChangeHandler}
+                    value={storageInputValue} 
+                    multiline
+                    rows={3}
+                    width={TextFieldWidth.standard}/>
+                <Button text='Save' primary={true} onClick={onSave} />
+            </div>
+        )
+    }
    
 
     return (
         <>
-            <div>
-                <span>Max word count: {wordStat.maxWordCount}</span>
-                
-            </div>
-            <div>
-                <span>Current word count: {wordStat.wordCount}</span>
-            </div>
-            <div>
-                <label htmlFor='storage'>My Notes:</label><br />
-                <textarea id='storage' onChange={onChangeHandler} value={storageInputValue} /><br />
-                <input type='button' onClick={onSave} value='Save' />
-            </div>
+            <TabBar onSelectedTabChanged={onSelectedTabChanged}
+                    selectedTabId={selectedTabId.current}
+                    tabSize={TabSize.Tall}>
+                <Tab name='Word Count' id='tab1' />
+                <Tab name='Notes' id='tab2' />
+            </TabBar>
+            <Observer selectedTabId={selectedTabId.current}>
+                {
+                    ({selectedTabId: string}) => {
+                        switch (selectedTabId.current.value) {
+                            case "tab1":
+                                return wordCountElement();
+                                break;
+                            case "tab2":
+                                return notesElement();
+                                break;
+                        }
+                    }
+                }
+            </Observer>
         </>
     );
 }
