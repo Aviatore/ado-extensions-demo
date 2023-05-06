@@ -135,7 +135,10 @@ const App = () => {
                 },
                 onFieldChanged: () => {
                     getWordCount();
-                }
+                },
+                onSaved: () => {},
+                onReset: () => {},
+                onRefreshed: () => {}
             }
         });
     }
