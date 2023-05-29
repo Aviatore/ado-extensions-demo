@@ -9,6 +9,7 @@ import { Observer } from "azure-devops-ui/Observer";
 import { Tab, TabBar, TabSize } from "azure-devops-ui/Tabs";
 import { TextField, TextFieldWidth } from "azure-devops-ui/TextField";
 import { Button } from "azure-devops-ui/Button";
+import { Checkbox } from "azure-devops-ui/Checkbox";
 
 interface IWordStats {
     maxWordCount: number,
@@ -32,6 +33,8 @@ const App = () => {
     const workItemId = React.useRef(0);
     const [storageInputValue, setStorageInputValue] = React.useState("");
     const selectedTabId = React.useRef(new ObservableValue("tab1"));
+    const checkbox = React.useRef(new ObservableValue<boolean>(false));
+    const userId = React.useRef<string | null>(null);
 
     console.log("render");
 
@@ -82,10 +85,11 @@ const App = () => {
         const dataManager = await getDataManager();
 
         let document: IData;
+        const id = checkbox.current.value ? `${userId.current}.${workItemId.current.toString()}` : workItemId.current.toString();
 
         try
         {
-            document = await dataManager.getDocument("myExt", workItemId.current.toString());
+            document = await dataManager.getDocument("myExt", id);
             document.data = newData;
 
             console.log("Editing existing storage ...");
@@ -93,7 +97,7 @@ const App = () => {
         } catch {
             console.log("Creating a new storage ...");
             const newDocument: IData = {
-                id: workItemId.current.toString(),
+                id: id,
                 data: newData
             }
             dataManager.createDocument("myExt", newDocument);
@@ -112,14 +116,16 @@ const App = () => {
 
     const loadData = async () => {
         const dataManager = await getDataManager();
+        const id = checkbox.current.value ? `${userId.current}.${workItemId.current.toString()}` : workItemId.current.toString();
 
         try
         {
-            const document: IData = await dataManager.getDocument("myExt", workItemId.current.toString());
+            const document: IData = await dataManager.getDocument("myExt", id);
 
             setStorageInputValue(document.data);
         } catch {
-            console.log(`Cannot get a document. Collection 'myExt', Work Item ID: '${workItemId.current}'`);
+            console.log(`Cannot get a document. Collection 'myExt', Work Item ID: '${id}'`);
+            setStorageInputValue("");
         }
     }
 
@@ -137,6 +143,10 @@ const App = () => {
 
                     const wifs = await getWorkItemFormService();
                     workItemId.current = await wifs.getId();
+
+                    const user = SDK.getUser();
+                    userId.current = user.id;
+                    console.log(user);
                     
                     getWordCount();
 
@@ -169,6 +179,11 @@ const App = () => {
         )
     }
 
+    const onCheckHandler = (e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined, checked: boolean) => {
+        checkbox.current.value = checked;
+        loadData();
+    }
+
     const notesElement: () => JSX.Element = () => {
         return (
             <div>
@@ -179,6 +194,11 @@ const App = () => {
                     multiline
                     rows={3}
                     width={TextFieldWidth.standard}/>
+                <Checkbox
+                    onChange={onCheckHandler}
+                    checked={checkbox.current}
+                    label="Personal"
+                /><br />
                 <Button text='Save' primary={true} onClick={onSave} />
             </div>
         )
@@ -195,8 +215,8 @@ const App = () => {
             </TabBar>
             <Observer selectedTabId={selectedTabId.current}>
                 {
-                    ({selectedTabId: string}) => {
-                        switch (selectedTabId.current.value) {
+                    (props: {selectedTabId: string}) => {
+                        switch (props.selectedTabId) {
                             case "tab1":
                                 return wordCountElement();
                                 break;
